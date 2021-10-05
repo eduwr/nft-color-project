@@ -37,4 +37,14 @@ contract("Color", (accounts) => {
       assert.equal(symbol, "CLR");
     });
   });
+
+  describe("minting", async () => {
+    it("creates a new token", async () => {
+      const result = await contract.mint("#CCCCCC");
+      const totalSupply = await contract.totalSupply();
+      // success
+
+      assert.equal(totalSupply, 1);
+    });
+  });
 });
