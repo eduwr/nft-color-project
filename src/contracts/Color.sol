@@ -10,6 +10,11 @@ contract Color is ERC721, ERC721Enumerable {
 
   constructor() ERC721("Color", "CLR") {}
 
+  modifier uniqueColor(string memory _color) {
+    require(!_colorExists[_color], "Color should be unique");
+    _;
+  }
+
   function _beforeTokenTransfer(
     address from,
     address to,
@@ -27,8 +32,7 @@ contract Color is ERC721, ERC721Enumerable {
     return super.supportsInterface(interfaceId);
   }
 
-  function mint(string memory _color) public {
-    // Require unique color
+  function mint(string memory _color) public uniqueColor(_color) {
     colors.push(_color);
     uint256 _id = colors.length - 1;
     _safeMint(msg.sender, _id);

@@ -42,9 +42,20 @@ contract("Color", (accounts) => {
     it("creates a new token", async () => {
       const result = await contract.mint("#CCCCCC");
       const totalSupply = await contract.totalSupply();
-      // success
 
+      // success
       assert.equal(totalSupply, 1);
+      const event = result.logs[0].args;
+      assert.equal(event.tokenId.toNumber(), 0, "Id is correct");
+      assert.equal(
+        event.from,
+        "0x0000000000000000000000000000000000000000",
+        "from is correct"
+      );
+      assert.equal(event.to, accounts[0], "to is correct");
+
+      // failure
+      await contract.mint("#CCCCCC").should.be.rejected;
     });
   });
 });
