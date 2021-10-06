@@ -10,6 +10,7 @@ const App = () => {
   const [contract, setContract] = useState();
   const [totalSupply, setTotalSupply] = useState();
   const [colors, setColors] = useState([]);
+  const [selectedColor, setSelectedColor] = useState("");
   const loadWeb3 = async () => {
     if (window.ethereum) {
       window.web3 = new Web3(window.ethereum);
@@ -62,6 +63,24 @@ const App = () => {
     fetchContractData();
   }, [contract]);
 
+  const mint = async (color) => {
+    if (!contract || !account) {
+      return;
+    }
+    contract.methods
+      .mint(color)
+      .send({ from: account })
+      .once("receipt", (receipt) => {
+        setColors([...colors, color]);
+      });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    await mint(selectedColor);
+  };
+
   return (
     <div>
       <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
@@ -85,7 +104,19 @@ const App = () => {
         <div className="row">
           <main role="main" className="col-lg-12 d-flex text-center">
             <div className="content mr-auto ml-auto">
-              {/* form goes here */}
+              <h1>Issue Token</h1>
+              <form onSubmit={handleSubmit}>
+                <input
+                  type="text"
+                  className="form-control mb-1"
+                  placeholder="e.g. #FFFFFF"
+                  value={selectedColor}
+                  onChange={(e) => setSelectedColor(e.target.value)}
+                />
+                <button type="submit" className="btn btn-block btn-primary">
+                  MINT
+                </button>
+              </form>
             </div>
           </main>
         </div>
