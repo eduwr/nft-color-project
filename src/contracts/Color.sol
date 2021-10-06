@@ -5,7 +5,8 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 
 contract Color is ERC721, ERC721Enumerable {
-  string[] colors;
+  string[] public colors;
+
   mapping(string => bool) _colorExists;
 
   constructor() ERC721("Color", "CLR") {}
@@ -13,6 +14,10 @@ contract Color is ERC721, ERC721Enumerable {
   modifier uniqueColor(string memory _color) {
     require(!_colorExists[_color], "Color should be unique");
     _;
+  }
+
+  function getColors() external view returns (string[] memory) {
+    return colors;
   }
 
   function _beforeTokenTransfer(

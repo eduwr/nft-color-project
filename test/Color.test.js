@@ -8,6 +8,7 @@ require("chai").use(require("chai-as-promised")).should();
 
 contract("Color", (accounts) => {
   let contract;
+  const COLORS = ["#545863", "#00E8FC", "#F96E46", "#F9C846"];
 
   before(async () => {
     contract = await Color.deployed();
@@ -40,7 +41,7 @@ contract("Color", (accounts) => {
 
   describe("minting", async () => {
     it("creates a new token", async () => {
-      const result = await contract.mint("#CCCCCC");
+      const result = await contract.mint(COLORS[0]);
       const totalSupply = await contract.totalSupply();
 
       // success
@@ -55,7 +56,33 @@ contract("Color", (accounts) => {
       assert.equal(event.to, accounts[0], "to is correct");
 
       // failure
-      await contract.mint("#CCCCCC").should.be.rejected;
+      await contract.mint(COLORS[0]).should.be.rejected;
+    });
+  });
+
+  describe("indexing", async () => {
+    it("lists colors", async () => {
+      // Mint 3 more tokens
+      await contract.mint(COLORS[1]);
+      await contract.mint(COLORS[2]);
+      await contract.mint(COLORS[3]);
+
+      const totalSupply = await contract.totalSupply();
+      assert.equal(totalSupply, 4);
+
+      const colors = await contract.getColors();
+
+      assert.isArray(colors);
+      assert.deepEqual(colors, COLORS);
+
+      let color;
+      let result = [];
+
+      for (let i = 0; i < totalSupply; i++) {
+        color = await contract.colors(i);
+        result.push(color);
+      }
+      assert.deepEqual(result, COLORS);
     });
   });
 });
